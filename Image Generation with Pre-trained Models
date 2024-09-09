@@ -1,0 +1,32 @@
+import torch
+from diffusers import StableDiffusionPipeline
+from PIL import Image
+
+# Check if CUDA (GPU) is available, otherwise use CPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Load the pre-trained Stable Diffusion model from Hugging Face
+model_name = "CompVis/stable-diffusion-v1-4"  # You can choose other versions/models as well
+pipe = StableDiffusionPipeline.from_pretrained(model_name).to(device)
+
+# Function to generate an image from a text prompt
+def generate_image(prompt):
+    print(f"Generating image for prompt: '{prompt}'")
+
+    # Generate image
+    with torch.no_grad():
+        image = pipe(prompt, guidance_scale=7.5)["sample"][0]
+
+    # Save the generated image
+    image.save("generated_image.png")
+    print("Image saved as 'generated_image.png'")
+
+# Example prompt
+prompt = "A futuristic cityscape at sunset with flying cars"
+
+# Generate the image
+generate_image(prompt)
+
+# Open and display the image using Pillow (optional)
+img = Image.open("generated_image.png")
+img.show()
